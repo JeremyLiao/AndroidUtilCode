@@ -1,0 +1,62 @@
+plugins {
+    id 'com.gradle.plugin-publish' version "0.10.0"
+}
+
+apply {
+    plugin "groovy"
+    plugin "java-gradle-plugin"
+}
+
+gradlePlugin {
+    plugins {
+        apiPlugin {
+            id = 'com.blankj.api'
+            implementationClass = 'com.blankj.api.ApiPlugin'
+        }
+    }
+}
+
+dependencies {
+    compileOnly Config.depConfig.plugin_gradle.dep
+    implementation Config.depConfig.commons_io.dep
+    implementation gradleApi()
+    implementation localGroovy()
+
+    testImplementation Config.depConfig.test_junit.dep
+    testImplementation Config.depConfig.plugin_gradle.dep
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs += 'src/main/java'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/Blankj/AndroidUtilCode'
+    vcsUrl = 'https://github.com/Blankj/AndroidUtilCode.git'
+    description = 'Plugin for ApiUtils.'
+    tags = ['gradle', 'plugin', 'api', 'ApiUtils', 'asm']
+
+    plugins {
+        apiPlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = 'Plugin for ApiUtils.'
+        }
+    }
+}
+
+apply from: "${rootDir.path}/gradle/publish.gradle"
+publish {
+    name = "ApiPlugin"
+    groupId = Config.depConfig.plugin_api.groupId
+    artifactId = Config.depConfig.plugin_api.artifactId
+    version = Config.depConfig.plugin_api.version
+    website = "https://github.com/Blankj/AndroidUtilCode"
+}
+
+//./gradlew plugin:plugin_api-gradle-plugin:mavenLocal     // 上传到本地 mavenLocal
+//./gradlew plugin:plugin_api-gradle-plugin:bintrayUpload  // 上传到 jcenter
+//./gradlew plugin:plugin_api-gradle-plugin:publishPlugins // 上传到 gradle 插件库中

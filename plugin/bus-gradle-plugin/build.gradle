@@ -1,0 +1,62 @@
+plugins {
+    id 'com.gradle.plugin-publish' version "0.10.0"
+}
+
+apply {
+    plugin "groovy"
+    plugin "java-gradle-plugin"
+}
+
+gradlePlugin {
+    plugins {
+        busPlugin {
+            id = 'com.blankj.bus'
+            implementationClass = 'com.blankj.bus.BusPlugin'
+        }
+    }
+}
+
+dependencies {
+    compileOnly Config.depConfig.plugin_gradle.dep
+    implementation Config.depConfig.commons_io.dep
+    implementation gradleApi()
+    implementation localGroovy()
+
+    testImplementation Config.depConfig.test_junit.dep
+    testImplementation Config.depConfig.plugin_gradle.dep
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs += 'src/main/java'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/Blankj/AndroidUtilCode'
+    vcsUrl = 'https://github.com/Blankj/AndroidUtilCode.git'
+    description = 'Plugin for BusUtils used as EventBus.'
+    tags = ['gradle', 'plugin', 'bus', 'eventbus', 'BusUtils', 'asm']
+
+    plugins {
+        busPlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = 'Plugin for BusUtils used as EventBus.'
+        }
+    }
+}
+
+apply from: "${rootDir.path}/gradle/publish.gradle"
+publish {
+    name = "BusPlugin"
+    groupId = Config.depConfig.plugin_bus.groupId
+    artifactId = Config.depConfig.plugin_bus.artifactId
+    version = Config.depConfig.plugin_bus.version
+    website = "https://github.com/Blankj/AndroidUtilCode"
+}
+
+//./gradlew plugin:lib_bus-gradle-plugin:mavenLocal    // 上传到本地 mavenLocal
+//./gradlew plugin:lib_bus-gradle-plugin:bintrayUpload  // 上传到 jcenter
+//./gradlew plugin:lib_bus-gradle-plugin:publishPlugins // 上传到 gradle 插件库中
